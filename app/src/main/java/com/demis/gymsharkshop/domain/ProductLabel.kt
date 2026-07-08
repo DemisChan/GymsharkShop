@@ -5,7 +5,7 @@ enum class ProductLabel {
 
     companion object {
         fun fromRaw(value: String): ProductLabel {
-            return when (value) {
+            return when (value.lowercase()) {
                 "going-fast" -> GOING_FAST
                 "new" -> NEW
                 "popular" -> POPULAR

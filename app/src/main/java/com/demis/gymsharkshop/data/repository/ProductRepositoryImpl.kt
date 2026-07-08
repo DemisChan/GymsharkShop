@@ -1,6 +1,5 @@
 package com.demis.gymsharkshop.data.repository
 
-import android.util.Log
 import com.demis.gymsharkshop.data.mapper.toProduct
 import com.demis.gymsharkshop.data.remote.ProductApi
 import com.demis.gymsharkshop.domain.ErrorType
@@ -11,7 +10,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import java.io.IOException
-import java.net.SocketTimeoutException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
@@ -19,13 +17,15 @@ class ProductRepositoryImpl @Inject constructor(
     private val api: ProductApi,
 ) : ProductRepository {
 
-    private val cache = ConcurrentHashMap<Long, Product>()
+    @Volatile
+    private var cache: Map<Long, Product> = emptyMap()
 
     override suspend fun getProducts(): ProductResult =
         try {
+            val local = HashMap<Long, Product>()
             val products = api.getProducts().hits.map { it.toProduct() }
-            cache.clear()
-            products.forEach { cache[it.id] = it }
+            products.associateByTo(local) { it.id }
+            cache = local
 
             ProductResult.Success(products)
         } catch (e: CancellationException) {
@@ -37,7 +37,8 @@ class ProductRepositoryImpl @Inject constructor(
         } catch (e: SerializationException) {
             ProductResult.Error(ErrorType.SERIALIZATION)
         } catch (e: Exception) {
-            Log.e("Unknown Error", e.message.toString())
+            println("Unknown error fetching products: ${e.message}")
+            e.printStackTrace()
             ProductResult.Error(ErrorType.UNKNOWN)
         }
 
