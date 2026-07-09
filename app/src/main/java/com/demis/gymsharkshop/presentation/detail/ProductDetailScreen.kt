@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -64,7 +67,9 @@ fun ProductDetailContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier.fillMaxSize().background(GsBlack)) {
+    Box(modifier
+        .fillMaxSize()
+        .background(GsBlack)) {
         when (state) {
             is ProductDetailUiState.Content -> ProductDetail(state.product, onBack)
             ProductDetailUiState.NotFound -> NotFound(onBack)
@@ -74,10 +79,19 @@ fun ProductDetailContent(
 
 @Composable
 private fun ProductDetail(product: ProductUi, onBack: () -> Unit) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        Box(Modifier.fillMaxWidth().aspectRatio(4f / 4.2f)) {
-            ProductImage(product.imageUrl, Modifier.fillMaxSize())
-            BackButton(onBack, Modifier.statusBarsPadding().padding(14.dp))
+    Column(Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
+        Box(Modifier
+            .fillMaxWidth()
+            .aspectRatio(4f / 4.2f)) {
+            ImageCarousel(
+                images = product.images.ifEmpty { listOf(product.imageUrl) },
+                modifier = Modifier.fillMaxSize(),
+            )
+            BackButton(onBack, Modifier
+                .statusBarsPadding()
+                .padding(14.dp))
         }
         Column(Modifier.padding(20.dp, 20.dp, 20.dp, 40.dp)) {
             if (product.labels.isNotEmpty()) {
@@ -116,6 +130,38 @@ private fun ProductDetail(product: ProductUi, onBack: () -> Unit) {
     }
 }
 
+/**
+ * Swipeable gallery over the product's media images, with page-dot indicators.
+ * A single image (or the featured fallback) renders as one page with no dots.
+ */
+@Composable
+private fun ImageCarousel(images: List<String>, modifier: Modifier = Modifier) {
+    val pagerState = rememberPagerState(pageCount = { images.size })
+    Box(modifier) {
+        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+            ProductImage(images[page], Modifier.fillMaxSize())
+        }
+        if (images.size > 1) {
+            Row(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                repeat(images.size) { index ->
+                    val selected = index == pagerState.currentPage
+                    Box(
+                        Modifier
+                            .size(if (selected) 8.dp else 6.dp)
+                            .clip(CircleShape)
+                            .background(if (selected) GsLime else GsText.copy(alpha = 0.4f)),
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun BackButton(onBack: () -> Unit, modifier: Modifier = Modifier) {
     Box(
@@ -136,7 +182,9 @@ private fun BackButton(onBack: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun NotFound(onBack: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().padding(32.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -147,17 +195,19 @@ private fun NotFound(onBack: () -> Unit) {
         Text(
             "GO BACK", color = GsLime, fontFamily = Archivo,
             fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, letterSpacing = 2.sp,
-            modifier = Modifier.padding(top = 18.dp).clickable(onClick = onBack),
+            modifier = Modifier
+                .padding(top = 18.dp)
+                .clickable(onClick = onBack),
         )
     }
 }
 
 private val sampleProductUi = ProductUi(
     id = 1, name = "Vital Seamless Leggings", priceLabel = "£45.00", colour = "Black",
-    imageUrl = "", images = emptyList(),
+    imageUrl = "", images = listOf("", "", ""),
     labels = listOf(ProductLabel.GOING_FAST, ProductLabel.RECYCLED_NYLON),
     descriptionHtml = "<p><b>Sweat-wicking</b>, squat-proof leggings built for training.</p>" +
-        "<ul><li>Four-way stretch</li><li>High-waisted</li></ul>",
+            "<ul><li>Four-way stretch</li><li>High-waisted</li></ul>",
 )
 
 @Preview(widthDp = 380, heightDp = 900)
