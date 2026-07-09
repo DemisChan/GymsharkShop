@@ -18,7 +18,7 @@ and an MVVM architecture.
 
 |                          Product list                          |                          Product detail                          |                          Splash                           |
 |:--------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------:|
-|[Product list](docs/screenshots/Screenshot_20260709_152531.png) |[Product detail](docs/screenshots/Screenshot_20260709_152648.png) | [Splash](docs/screenshots/Screenshot_20260709_152433.png) |
+| ![Product list](docs/screenshots/Screenshot_20260709_152531.png) | ![Product detail](docs/screenshots/Screenshot_20260709_152648.png) | ![Splash](docs/screenshots/Screenshot_20260709_152433.png) |
 
 
 
