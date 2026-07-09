@@ -4,7 +4,5 @@ import com.demis.gymsharkshop.presentation.model.ProductUi
 
 sealed interface ProductDetailUiState {
     data class Content(val product: ProductUi) : ProductDetailUiState
-
-    /** Cache was cold (process death / deep link before the list loaded). */
     data object NotFound : ProductDetailUiState
 }

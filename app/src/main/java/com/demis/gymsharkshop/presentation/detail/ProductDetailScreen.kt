@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -76,7 +77,7 @@ private fun ProductDetail(product: ProductUi, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Box(Modifier.fillMaxWidth().aspectRatio(4f / 4.2f)) {
             ProductImage(product.imageUrl, Modifier.fillMaxSize())
-            BackButton(onBack, Modifier.padding(14.dp))
+            BackButton(onBack, Modifier.statusBarsPadding().padding(14.dp))
         }
         Column(Modifier.padding(20.dp, 20.dp, 20.dp, 40.dp)) {
             if (product.labels.isNotEmpty()) {
