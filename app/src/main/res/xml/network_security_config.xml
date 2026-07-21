@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config>
+        <!-- Trust cdn.develop.gymshark.com and other development endpoints -->
+        <domain includeSubdomains="true">cdn.develop.gymshark.com</domain>
+        <domain includeSubdomains="true">develop.gymshark.com</domain>
+        <trust-anchors>
+            <!-- Trust the Zscaler/Gymshark PEM certificate bundled with the app -->
+            <certificates src="@raw/gymshark_cert" />
+            <!-- Trust system CA certificates -->
+            <certificates src="system" />
+            <!-- Trust user-installed CA certificates -->
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+    <debug-overrides>
+        <trust-anchors>
+            <!-- In debug builds, trust user-installed certificates as well (e.g. for Charles/Proxyman) -->
+            <certificates src="user" />
+            <certificates src="system" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
